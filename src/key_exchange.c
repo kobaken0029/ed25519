@@ -1,7 +1,13 @@
 #include "ed25519.h"
 #include "fe.h"
 
-void ed25519_key_exchange(unsigned char *shared_secret, const unsigned char *public_key, const unsigned char *private_key) {
+JNIEXPORT void JNICALL Java_com_kobaken0029_ed25519_Ed25519_ed25519_key_exchange(
+        JNIEnv *env, jclass type, jbyteArray shared_secret_, jbyteArray public_key_, jbyteArray private_key_) {
+
+    jbyte *shared_secret = (*env)->GetByteArrayElements(env, shared_secret_, NULL);
+    jbyte *public_key = (*env)->GetByteArrayElements(env, public_key_, NULL);
+    jbyte *private_key = (*env)->GetByteArrayElements(env, private_key_, NULL);
+
     unsigned char e[32];
     unsigned int i;
     
@@ -76,4 +82,8 @@ void ed25519_key_exchange(unsigned char *shared_secret, const unsigned char *pub
     fe_invert(z2, z2);
     fe_mul(x2, x2, z2);
     fe_tobytes(shared_secret, x2);
+
+    (*env)->ReleaseByteArrayElements(env, shared_secret_, shared_secret, 0);
+    (*env)->ReleaseByteArrayElements(env, public_key_, public_key, 0);
+    (*env)->ReleaseByteArrayElements(env, private_key_, private_key, 0);
 }

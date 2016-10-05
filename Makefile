@@ -1,9 +1,15 @@
-all: libed25519.a
+LIBDIR := lib
+
+all: $(LIBDIR) $(LIBDIR)/libed25519.a $(LIBDIR)/libed25519.so 
 
 CC := gcc
 CFLAGS := -O2 -pipe
 CFLAGS += -Wall -pedantic
 LDFLAGS += -Led25519
+LIBDIR := lib
+
+$(LIBDIR):
+	mkdir -p $(LIBDIR)
 
 SRCS = $(wildcard src/*.c)
 OBJS = $(SRCS:.c=.o)
@@ -11,16 +17,19 @@ OBJS = $(SRCS:.c=.o)
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-libed25519.a: $(OBJS)
+$(LIBDIR)/libed25519.a: $(OBJS)
 	ls $(OBJS)
 	ar rcs $@ $^
 
+$(LIBDIR)/libed25519.so: $(OBJS)
+	$(CC) -shared $(OBJS) -o $@
+
 .PHONY: test
 test: $(LIB)
-	$(CC) -o $@ test.c $(LDFLAGS) -led25519
+	$(CC) -o $@ test.c $(LDFLAGS) -L$(LIBDIR) -led25519
 
 .PHONY: clean
 clean:
-	rm -f libed25519.a test test.o $(OBJS)
+	rm -fr $(LIBDIR)  test test.o $(OBJS)
 
 

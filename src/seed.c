@@ -9,16 +9,22 @@
 #include <stdio.h>
 #endif
 
-int ed25519_create_seed(unsigned char *seed) {
+JNIEXPORT jint JNICALL Java_com_kobaken0029_ed25519_Ed25519_ed25519_create_seed(
+        JNIEnv *env, jclass type, jbyteArray seed_) {
+
+    jbyte *seed = (*env)->GetByteArrayElements(env, seed_, NULL);
+
 #ifdef _WIN32
     HCRYPTPROV prov;
 
     if (!CryptAcquireContext(&prov, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))  {
+        (*env)->ReleaseByteArrayElements(env, seed_, seed, 0);
         return 1;
     }
 
     if (!CryptGenRandom(prov, 32, seed))  {
         CryptReleaseContext(prov, 0);
+        (*env)->ReleaseByteArrayElements(env, seed_, seed, 0);
         return 1;
     }
 
@@ -27,6 +33,7 @@ int ed25519_create_seed(unsigned char *seed) {
     FILE *f = fopen("/dev/urandom", "rb");
 
     if (f == NULL) {
+        (*env)->ReleaseByteArrayElements(env, seed_, seed, 0);
         return 1;
     }
 
@@ -34,6 +41,7 @@ int ed25519_create_seed(unsigned char *seed) {
     fclose(f);
 #endif
 
+    (*env)->ReleaseByteArrayElements(env, seed_, seed, 0);
     return 0;
 }
 

@@ -5,7 +5,13 @@
 
 
 /* see http://crypto.stackexchange.com/a/6215/4697 */
-void ed25519_add_scalar(unsigned char *public_key, unsigned char *private_key, const unsigned char *scalar) {
+JNIEXPORT void JNICALL Java_com_kobaken0029_ed25519_Ed25519_ed25519_add_scalar(
+        JNIEnv *env, jclass type, jbyteArray public_key_, jbyteArray private_key_, jbyteArray scalar_) {
+
+    jbyte *public_key = (*env)->GetByteArrayElements(env, public_key_, NULL);
+    jbyte *private_key = (*env)->GetByteArrayElements(env, private_key_, NULL);
+    jbyte *scalar = (*env)->GetByteArrayElements(env, scalar_, NULL);
+
     const unsigned char SC_1[32] = {1}; /* scalar with value 1 */
 
     unsigned char n[32];
@@ -66,4 +72,8 @@ void ed25519_add_scalar(unsigned char *public_key, unsigned char *private_key, c
         /* pack public key */
         ge_p3_tobytes(public_key, &A);
     }
+
+    (*env)->ReleaseByteArrayElements(env, public_key_, public_key, 0);
+    (*env)->ReleaseByteArrayElements(env, private_key_, private_key, 0);
+    (*env)->ReleaseByteArrayElements(env, scalar_, scalar, 0);
 }

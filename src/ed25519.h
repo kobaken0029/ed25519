@@ -21,14 +21,20 @@ extern "C" {
 #endif
 
 #ifndef ED25519_NO_SEED
-int ED25519_DECLSPEC ed25519_create_seed(unsigned char *seed);
+JNIEXPORT jint JNICALL Java_com_kobaken0029_ed25519_Ed25519_ed25519_create_seed(
+    JNIEnv *env, jclass type, jbyteArray seed_);
 #endif
 
-void ED25519_DECLSPEC ed25519_create_keypair(unsigned char *public_key, unsigned char *private_key, const unsigned char *seed);
-void ED25519_DECLSPEC ed25519_sign(unsigned char *signature, const unsigned char *message, size_t message_len, const unsigned char *public_key, const unsigned char *private_key);
-int ED25519_DECLSPEC ed25519_verify(const unsigned char *signature, const unsigned char *message, size_t message_len, const unsigned char *public_key);
-void ED25519_DECLSPEC ed25519_add_scalar(unsigned char *public_key, unsigned char *private_key, const unsigned char *scalar);
-void ED25519_DECLSPEC ed25519_key_exchange(unsigned char *shared_secret, const unsigned char *public_key, const unsigned char *private_key);
+JNIEXPORT void JNICALL Java_com_kobaken0029_ed25519_Ed25519_ed25519_create_keypair(
+    JNIEnv *env, jclass type, jbyteArray publicKey_, jbyteArray privateKey_, jbyteArray seed_);
+JNIEXPORT void JNICALL Java_com_kobaken0029_ed25519_Ed25519_ed25519_sign(
+    JNIEnv *env, jclass type, jbyteArray signature, jbyteArray message, jint message_len, jbyteArray public_key, jbyteArray private_key);
+JNIEXPORT jint JNICALL Java_com_kobaken0029_ed25519_Ed25519_ed25519_verify(
+    JNIEnv *env, jclass type, jbyteArray signature_, jbyteArray message_, jint message_len, jbyteArray public_key_);
+JNIEXPORT void JNICALL Java_com_kobaken0029_ed25519_Ed25519_ed25519_add_scalar(
+    JNIEnv *env, jclass type, jbyteArray public_key_, jbyteArray private_key_, jbyteArray scalar_);
+JNIEXPORT void JNICALL Java_com_kobaken0029_ed25519_Ed25519_ed25519_key_exchange(
+    JNIEnv *env, jclass type, jbyteArray shared_secret_, jbyteArray public_key_, jbyteArray private_key_);
 
 
 #ifdef __cplusplus

@@ -4,7 +4,14 @@
 #include "sc.h"
 
 
-void ed25519_sign(unsigned char *signature, const unsigned char *message, size_t message_len, const unsigned char *public_key, const unsigned char *private_key) {
+JNIEXPORT void JNICALL Java_com_kobaken0029_ed25519_Ed25519_ed25519_sign(
+    JNIEnv *env, jclass type, jbyteArray signature, jbyteArray message, jint message_len, jbyteArray public_key, jbyteArray private_key) {
+
+    jbyte *signature = (*env)->GetByteArrayElements(env, signature_, NULL);
+    jbyte *message = (*env)->GetByteArrayElements(env, message_, NULL);
+    jbyte *public_key = (*env)->GetByteArrayElements(env, public_key_, NULL);
+    jbyte *private_key = (*env)->GetByteArrayElements(env, private_key_, NULL);
+
     sha3_context hash;
     unsigned char hram[64];
     unsigned char r[64];
@@ -28,4 +35,9 @@ void ed25519_sign(unsigned char *signature, const unsigned char *message, size_t
 
     sc_reduce(hram);
     sc_muladd(signature + 32, hram, private_key, r);
+
+    jbyte *signature = (*env)->GetByteArrayElements(env, signature_, NULL);
+    jbyte *message = (*env)->GetByteArrayElements(env, message_, NULL);
+    jbyte *public_key = (*env)->GetByteArrayElements(env, public_key_, NULL);
+    jbyte *private_key = (*env)->GetByteArrayElements(env, private_key_, NULL);
 }

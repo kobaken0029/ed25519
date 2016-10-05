@@ -44,7 +44,14 @@ static int consttime_equal(const unsigned char *x, const unsigned char *y) {
     return !r;
 }
 
-int ed25519_verify(const unsigned char *signature, const unsigned char *message, size_t message_len, const unsigned char *public_key) {
+JNIEXPORT void JNICALL Java_com_kobaken0029_ed25519_Ed25519_ed25519_sign(
+        JNIEnv *env, jclass type, jbyteArray signature_, jbyteArray message_, jint message_len, jbyteArray public_key_, jbyteArray private_key_) {
+
+    jbyte *signature = (*env)->GetByteArrayElements(env, signature_, NULL);
+    jbyte *message = (*env)->GetByteArrayElements(env, message_, NULL);
+    jbyte *public_key = (*env)->GetByteArrayElements(env, public_key_, NULL);
+    jbyte *private_key = (*env)->GetByteArrayElements(env, private_key_, NULL);
+
     unsigned char h[64];
     unsigned char checker[32];
     sha3_context hash;
@@ -52,10 +59,16 @@ int ed25519_verify(const unsigned char *signature, const unsigned char *message,
     ge_p2 R;
 
     if (signature[63] & 224) {
+        (*env)->ReleaseByteArrayElements(env, signature_, signature, 0);
+        (*env)->ReleaseByteArrayElements(env, message_, message, 0);
+        (*env)->ReleaseByteArrayElements(env, public_key_, public_key, 0);
         return 0;
     }
 
     if (ge_frombytes_negate_vartime(&A, public_key) != 0) {
+        (*env)->ReleaseByteArrayElements(env, signature_, signature, 0);
+        (*env)->ReleaseByteArrayElements(env, message_, message, 0);
+        (*env)->ReleaseByteArrayElements(env, public_key_, public_key, 0);
         return 0;
     }
 
@@ -70,8 +83,15 @@ int ed25519_verify(const unsigned char *signature, const unsigned char *message,
     ge_tobytes(checker, &R);
 
     if (!consttime_equal(checker, signature)) {
+        (*env)->ReleaseByteArrayElements(env, signature_, signature, 0);
+        (*env)->ReleaseByteArrayElements(env, message_, message, 0);
+        (*env)->ReleaseByteArrayElements(env, public_key_, public_key, 0);
         return 0;
     }
+
+    (*env)->ReleaseByteArrayElements(env, signature_, signature, 0);
+    (*env)->ReleaseByteArrayElements(env, message_, message, 0);
+    (*env)->ReleaseByteArrayElements(env, public_key_, public_key, 0);
 
     return 1;
 }
